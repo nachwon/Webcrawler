@@ -212,26 +212,44 @@ while True:
         collected_webtoon.save(savename, filetype)
 
     elif selection == '8':
-        try:
-            saved_list = os.listdir('./saved_list')
-            if saved_list == []:
-                print('저장된 파일이 없습니다.')
-                continue
-            
-            file_counter = 0
-            for i in saved_list:
-                print(f'{file_counter}. {i}')
-                file_counter += 1
-            print('')
-            loadname = input('불러올 파일 이름 입력 >>> ')
-            print('')
-            if len(loadname) <= 3:
-                loadname = saved_list[int(loadname)]
-            collected_webtoon.load(loadname)
-        
-        except FileNotFoundError:
-            print('파일 이름 또는 경로가 잘못되었습니다!')
+        saved_list = os.listdir('./saved_list')
+        if saved_list == []:
+            print('저장된 파일이 없습니다.')
             continue
+
+        saved_file_counter = 0
+        for i in saved_list:
+            print(f'{saved_file_counter}. ', i)
+            saved_file_counter += 1
+        print('')
+
+        loadname = input('불러올 파일 이름 입력 >>> ')
+        print('')
+        if len(loadname) <= 3:
+            loadname = saved_list[int(loadname)]
+            print(f'{loadname} 파일 불러오는 중...', '\n')
+
+            try:
+                f = open(f'./saved_list/{loadname}', 'rb')
+            except FileNotFoundError:
+                print('파일 이름 또는 경로가 잘못되었습니다.')
+
+        else:
+            try:
+                f = open(f'./saved_list/{loadname}', 'rb')
+            except FileNotFoundError:
+                print('파일 이름 또는 경로가 잘못되었습니다.')
+
+        list_loaded = pickle.load(f)
+        f.close()
+        webtoon_id = list_loaded.pop()
+        collected_webtoon = NaverWebtoonCrawler(webtoon_id)
+        collected_webtoon.load(loadname)
+        info_dic = get_webtoon_info(webtoon_id)
+        print('')
+        print('==================================', '\n')
+        print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
+        continue
 
     elif selection =='9':
         if len(collected_webtoon.episode_list) == 0:
@@ -239,15 +257,14 @@ while True:
         else:
             collected_webtoon.get_contents()
 
-
-    elif selection == 'q':
-        print('사용자에 의해 세션이 종료되었습니다.')
-        break
-    
     elif selection == 'r':
         print('세션을 다시 시작합니다...', '\n')
         crawler_restarter
         break
+
+    elif selection == 'q':
+        print('사용자에 의해 세션이 종료되었습니다.')
+        raise BreakIt
 
     else:
         print('잘못된 입력')
