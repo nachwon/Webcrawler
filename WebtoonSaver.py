@@ -1,4 +1,5 @@
 import pickle
+import crawler_restarter
 from webtoon_crawler import NaverWebtoonCrawler
 from utils import *
 
@@ -147,6 +148,7 @@ while True:
     print('8. 에피소드 목록 불러오기')
     print('==================================')
     print('9. 에피소드 목록에서 웹툰 추출')
+    print('r. 세션 재시작')
     print('q. 나가기')
     print('')
     selection = input('>>> ')
@@ -215,12 +217,16 @@ while True:
             if saved_list == []:
                 print('저장된 파일이 없습니다.')
                 continue
-
+            
+            file_counter = 0
             for i in saved_list:
-                print(i)
+                print(f'{file_counter}. {i}')
+                file_counter += 1
             print('')
             loadname = input('불러올 파일 이름 입력 >>> ')
             print('')
+            if len(loadname) <= 3:
+                loadname = saved_list[int(loadname)]
             collected_webtoon.load(loadname)
         
         except FileNotFoundError:
@@ -237,5 +243,11 @@ while True:
     elif selection == 'q':
         print('사용자에 의해 세션이 종료되었습니다.')
         break
+    
+    elif selection == 'r':
+        print('세션을 다시 시작합니다...', '\n')
+        crawler_restarter
+        break
+
     else:
         print('잘못된 입력')
