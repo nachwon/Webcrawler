@@ -1,4 +1,4 @@
-from WebtoonCrawler import NaverWebtoonCrawler
+from webtoon_crawler import NaverWebtoonCrawler
 from utils import *
 
 class BreakIt(Exception):
@@ -62,6 +62,7 @@ try:
     webtoon_id = int(webtoon_id)
     collected_webtoon = NaverWebtoonCrawler(webtoon_id)
     info_dic = get_webtoon_info(webtoon_id)
+    print('==================================', '\n')
     print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
 
 except ValueError:
@@ -138,9 +139,13 @@ while True:
         collected_webtoon.save(savename)
 
     elif selection == '8':
-        loadname = input('filename? >>> ')
-        print('')
-        collected_webtoon.load(loadname)
+        try:
+            loadname = input('filename? >>> ')
+            print('')
+            collected_webtoon.load(loadname)
+        except FileNotFoundError:
+            print('Wrong filename or directory!')
+            continue
 
     elif selection == 'q':
         print('Session Terminated by user')
