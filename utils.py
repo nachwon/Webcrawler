@@ -7,6 +7,24 @@ from PIL import Image
 from collections import namedtuple
 from bs4 import BeautifulSoup
 
+HTML_HEAD = """<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <table>
+        """
+
+HTML_TAIL = """</table>
+</body>
+</html>"""
+HTML_BODY = """    <tr>
+        <td><img src={img}></td>
+        <td>{title}</td>
+        <td>{rating}</td>
+        <td>{date}</td>
+        </tr>
+        """
 
 Episode = namedtuple('Episode', ['Img_url', 'Title', 'Rating', 'Date', 'No'])
 
@@ -137,29 +155,9 @@ def webtoon_search(keyword):
     
     return dict_list
 
-def get_contents(webtoon_id, No):
 
-    content_list = []
-    content_info = {'titleId': webtoon_id, 'no': No}
-    url = requests.get('http://comic.naver.com/webtoon/detail.nhn?', params=content_info)
-    content_data = url.text
-    content_bs = BeautifulSoup(content_data, 'lxml')
-    content_data_div = content_bs.find_all('div', class_='wt_viewer')
-    content_img = content_data_div[0].find_all('img')
-    for i in content_img:
-        content_list.append(i.get('src'))
-    count = 1
 
-    user_agent = {'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'}
-    for i in content_list:
-        img = requests.get(i, headers=user_agent)
-        f = open('image.jpg', 'wb')
-        f.write(img.content)
-        f.close()
-        
-
-        
-    print(content_list)
+# get_contents(694131, 29)
 
 
 

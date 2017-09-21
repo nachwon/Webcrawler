@@ -135,8 +135,9 @@ while True:
 
     elif selection == '7':
         savename = input('filename? >>> ')
+        filetype = input('filetype? >>> ')
         print('')
-        collected_webtoon.save(savename)
+        collected_webtoon.save(savename, filetype)
 
     elif selection == '8':
         try:
@@ -146,6 +147,7 @@ while True:
         except FileNotFoundError:
             print('Wrong filename or directory!')
             continue
+
 
     elif selection == 'q':
         print('Session Terminated by user')
