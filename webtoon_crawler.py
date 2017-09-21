@@ -160,7 +160,6 @@ class NaverWebtoonCrawler:
 
     def get_contents(self):
 
-        
         # 에피소드 리스트에서 에피소드 내용 이미지 리스트 추출
         for episode in self.episode_list:
             content_list = []
@@ -174,27 +173,30 @@ class NaverWebtoonCrawler:
                 content_list.append(i.get('src'))
             count = 1
 
-            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}', exist_ok=True)
+            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}화', exist_ok=True)
             # 폴더 생성
             
+            print(f'{episode.No} {episode.Title} download started')
+
             referer_url = f'http://comic.naver.com/webtoon/list.nhn?titleId={self.webtoon_id}'
             user_agent = {'Referer': referer_url}
             for i in content_list:
                 
                 img = requests.get(i, headers=user_agent)
-                f = open(f'webtoon/{self.webtoon_id}/{episode.No}/{count}.jpg', 'wb')
+                f = open(f'webtoon/{self.webtoon_id}/{episode.No}화/{episode.No}_{count}.jpg', 'wb')
                 f.write(img.content)
                 f.close()
                 print(f'{count}.jpg downloaded')
+                
                 count += 1
             # 경로 이미 존재할 경우 스킵
             # if os.path.exists(filepath):
                 # continue
-            print('webtoon download completed')
+            print(f'{episode.No} {episode.Title} download completed')
 
     # print(content_list)
-yumi = NaverWebtoonCrawler('694131')
-yumi.get_episode_list(1)
+# yumi = NaverWebtoonCrawler('694131')
+# yumi.get_episode_list(1)
 # print(yumi.episode_list)
 # yumi.up_to_date
 # yumi.total_episode_count()
@@ -203,7 +205,7 @@ yumi.get_episode_list(1)
 # print(yumi.episode_list)
 # yumi.up_to_date
 
-yumi.get_contents()
+# yumi.get_contents()
 # yumi.clear_episode_list()
 # print(yumi.episode_list)
 # yumi.load('test.txt')

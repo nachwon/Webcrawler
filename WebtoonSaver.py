@@ -84,6 +84,8 @@ while True:
     print('6. clear page list')
     print('7. save list')
     print('8. load list')
+    print('==================================')
+    print('9. get contents from episodes list!')
     print('q. exit')
     print('')
     selection = input('>>> ')
@@ -147,6 +149,8 @@ while True:
         except FileNotFoundError:
             print('Wrong filename or directory!')
             continue
+    elif selection =='9':
+        collected_webtoon.get_contents()
 
 
     elif selection == 'q':
