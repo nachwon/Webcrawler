@@ -36,23 +36,18 @@ class NaverWebtoonCrawler:
         try:
             if item[0].No == self.episode_list[0].No:
                 # print(item[0].No, self.episode_list[0].No)
-                print('episode_list is UP TO DATE.')
+                print('에피소드 목록이 최신상태입니다.')
                 self.is_up_to_date = True
                 # return True
             else:
                 # print(item[0].No, self.episode_list[0].No)
-                print('episode_list is NOT up to date.')
+                print('에피소드 목록이 최신상태가 아닙니다.')
                 self.is_up_to_date = False
                 # return False
         except IndexError:
-            print('episode list is empty')
+            print('에피소드 목록이 비어있습니다.')
 
     def update_episode_list(self, force_update=False):
-        """
-        self.episode_list에 존재하지 않는 episode들을 self.episode_list에 추가
-        :param force_update: 이미 존재하는 episode도 강제로 업데이트
-        :return: 추가된 episode의 수 (int)
-        """
         content_no_list = []
         count = 0
         class BreakIt(Exception):
@@ -64,8 +59,8 @@ class NaverWebtoonCrawler:
         if force_update == False:
             # 최신글과 목록 최상위 글이 같으면
             if self.is_up_to_date == True:
-                print('episode_list is already up to date!')
-                print(count, 'episodes were added')
+                print('에피소드 목록이 이미 최신상태입니다!')
+                print(count, '개의 에피소드가 추가되었습니다.')
             # 최신글과 목록 최상위 글이 다르면
             elif not self.is_up_to_date:
                 dummy = []
@@ -83,9 +78,9 @@ class NaverWebtoonCrawler:
                                 dummy.extend(self.episode_list)
                                 self.episode_list = dummy
                                 del dummy
-                                print('update finished!')
-                                print(count, 'episodes were added to the list')
-                                print('episode list is UP TO DATE')
+                                print('에피소드 목록 업데이트 완료!')
+                                print(count, '개의 에피소드가 목록에 추가되었습니다.')
+                                print('이제 에피소드 목록이 최신상태입니다.')
                                 raise BreakIt  # 에러 일으키면서 안쪽 루프 깨고
                         
 
@@ -93,10 +88,10 @@ class NaverWebtoonCrawler:
                     pass
             
         elif force_update == True:  # 강제 업데이트 켜져있으면
-            print('force updating...')
+            print('강제 업데이트를 시작합니다...')
             if self.is_up_to_date == True:  # 최신글이랑 가지고 있는 글 최상위랑 비교
-                print('episode_list is already up to date!')
-                print(count, 'episodes were added')
+                print('에피소드 목록이 이미 최신상태입니다.')
+                print(count, '개의 에피소드가 추가되었습니다.')
 
             elif not self.is_up_to_date:  # 목록이 최신이 아니면
                 try:
@@ -107,33 +102,41 @@ class NaverWebtoonCrawler:
                             if content.No not in content_no_list:  # 글번호가 가지고 있는 글번호 목록에 없으면
                                 self.episode_list.insert(0, content)  # 계속 추가함
                                 count += 1  # 카운터도 계속 올려주다가
-                                print(f'episode {content.Title} added')
+                                print(f'에피소드 {content.Title} 추가됨.')
                                 continue
 
                             elif content.No in content_no_list:  # 글번호가 가지고 있는 글번호 목록에 있으면
                                 self.episode_list.remove(content)  # 원래꺼 지우고
                                 self.episode_list.insert(0, content)  # 해당 글번호 글 추가해주고
-                                print(f'episode {content.Title} added')
+                                print(f'에피소드 {content.Title} 추가됨.')
                                 count += 1  # 카운터도 올려주고
                                 if content.No == content_no_list[-1]:
                                     self.episode_list.reverse()
-                                    print('update finished!')
-                                    print(count, 'episodes were added to the list')
-                                    print('episode list is now UP TO DATE')
+                                    print('에피소드 목록 업데이트 완료!')
+                                    print(count, '개의 에피소드가 추가되었습니다.')
+                                    print('이제 에피소드 목록이 최신상태입니다.')
                                     raise BreakIt  # 끝냄
                                 else:
                                     continue
                 except BreakIt:
                     pass
 
-    def clear_episode_list(self):
-        self.episode_list = []
-        return 'episode list has been cleared!'
+    def clear_episode_list(self,filename=None, make_sure='bypass'):
+        if make_sure == 'y':
+            self.episode_list = []
+            return '에피소드 목록을 비웠습니다!'
+        elif make_sure == 'bypass':
+            self.episode_list = []
+        elif make_sure == 'rf':
+            self.episode_list = []
+            os.remove(f'./saved_list/{filename}')
+        else:
+            return '에피소드 목록을 삭제하지 않았습니다.'
 
     def save(self, path=None, file_type='txt'):
         
         if file_type == 'html':
-            f = open(f'{path}.{file_type}', 'wt')
+            f = open(f'./saved_list/{path}.{file_type}', 'wt')
             f.write(HTML_HEAD)
             for i in self.episode_list:
                 f.write(HTML_BODY.format(img=i.Img_url, 
@@ -143,19 +146,23 @@ class NaverWebtoonCrawler:
             f.write(HTML_TAIL)
 
             f.close()
-            print(f'episode list successfully saved to {path}.{file_type}')
+            print(f'에피소드 목록을 ./saved_list/{path}.{file_type} 에 성공적으로 저장하였습니다.')
 
         elif file_type == 'txt':
-            f = open(f'{path}.{file_type}', 'wb')
+            f = open(f'./saved_list/{path}.{file_type}', 'wb')
+            self.episode_list.append(self.webtoon_id)
             pickle.dump(self.episode_list, f)
             f.close()
-            print(f'episode list successfully saved to {path}.{file_type}')
+            print(f'에피소드 목록을 ./saved_list/{path}.{file_type} 에 성공적으로 저장하였습니다.')
+        else:
+            print('txt와 html 타입만 지원합니다.')
 
     def load(self, path=None):
-        f = open(f'{path}', 'rb')
+        f = open(f'./saved_list/{path}', 'rb')
         self.episode_list = pickle.load(f)
         f.close()
-        print(f'{path} successfully loaded to episode list')
+        print(f'에피소드 목록을 ./saved_list/{path} 에서 성공적으로 불러왔습니다.')
+        return self.episode_list.pop()
 
 
     def get_contents(self):
@@ -176,8 +183,7 @@ class NaverWebtoonCrawler:
             os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}화', exist_ok=True)
             # 폴더 생성
             
-            print(f'{episode.No} {episode.Title} download started')
-
+            print(f'{episode.Title} 다운로드 시작')
             referer_url = f'http://comic.naver.com/webtoon/list.nhn?titleId={self.webtoon_id}'
             user_agent = {'Referer': referer_url}
             for i in content_list:
@@ -186,13 +192,13 @@ class NaverWebtoonCrawler:
                 f = open(f'webtoon/{self.webtoon_id}/{episode.No}화/{episode.No}_{count}.jpg', 'wb')
                 f.write(img.content)
                 f.close()
-                print(f'{count}.jpg downloaded')
+                print(f'{count}.jpg 다운로드 완료', end='\r')
                 
                 count += 1
             # 경로 이미 존재할 경우 스킵
             # if os.path.exists(filepath):
                 # continue
-            print(f'{episode.No} {episode.Title} download completed')
+            print(f'{episode.Title} 다운로드 완료')
 
     # print(content_list)
 # yumi = NaverWebtoonCrawler('694131')

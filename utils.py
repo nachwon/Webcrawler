@@ -32,7 +32,7 @@ def get_webtoon_list(web_id, *args):
     episode_list = []
     
     if args[0] == 'full':
-        custom_generator = range(1, 60)
+        custom_generator = range(1, 100)
     elif len(args) == 2:
         custom_generator = range(args[0], args[1] + 1)
     elif len(args) == 1:

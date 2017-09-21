@@ -1,23 +1,40 @@
+import pickle
 from webtoon_crawler import NaverWebtoonCrawler
 from utils import *
 
 class BreakIt(Exception):
     def __str__(self):
-        return 'Session Terminated by user'
+        return '사용자에 의해 세션이 종료되었습니다.'
 
 print('==================================')
 print('=      Naver_Webtoon_Crawler     =')
 print('==================================')
 while True:
-    print('type "list" for webtoon id lists')
-    print('type "search" to search webtoon id online')
-    webtoon_id = input('input webtoon id >>> ')
+    print("")
+    print('============명령어 목록===========')
+    print('list : 요일별 웹툰 목록 확인')
+    print('search : 웹툰 정보 검색')
+    print('load : 저장된 웹툰 목록 확인')
+    print('웹툰 ID (6자리 숫자) : 해당 ID 웹툰 불러오기')
+    print('==================================')
+    print('')
+    webtoon_id = input('명령 입력 >>> ')
     print("")
 
+    collected_webtoon = None
+
     if webtoon_id == 'list':
-        print('type only 3 letters')
-        print('Ex: monday: mon')
-        day = input('which day? >>> ')
+        print('원하는 요일을 아래와 같이 입력해주세요.')
+        print('월요일: mon')
+        print('화요일: tue')
+        print('수요일: wed')
+        print('목요일: thr')
+        print('금요일: fri')
+        print('토요일: sat')
+        print('일요일: sun')
+
+        print('')
+        day = input('요일 입력 >>> ')
         print("")
         webtoon_list = get_webtoon_id(day)
         list_index = 0
@@ -26,14 +43,50 @@ while True:
             list_index += 1
         print("")
 
-        select_id = input('Select from list >>> ')
+        select_id = input('목록에서 선택 >>> ')
         print('')
         webtoon_id = webtoon_list[int(select_id)].Id
         break
 
+    elif webtoon_id == 'load':
+        saved_list = os.listdir('./saved_list')
+        if saved_list == []:
+            print('저장된 파일이 없습니다.')
+            continue
+
+        saved_file_counter = 0
+        for i in saved_list:
+            print(f'{saved_file_counter}. ', i)
+            saved_file_counter += 1
+        print('')
+
+        loadname = input('불러올 파일 이름 입력 >>> ')
+        print('')
+        if len(loadname) <= 3:
+            loadname = saved_list[int(loadname)]
+            print(f'{loadname} 파일 불러오는 중...', '\n')
+
+            try:
+                f = open(f'./saved_list/{loadname}', 'rb')
+            except FileNotFoundError:
+                print('파일 이름 또는 경로가 잘못되었습니다.')
+
+        else:
+            try:
+                f = open(f'./saved_list/{loadname}', 'rb')
+            except FileNotFoundError:
+                print('파일 이름 또는 경로가 잘못되었습니다.')
+
+        list_loaded = pickle.load(f)
+        f.close()
+        webtoon_id = list_loaded.pop()
+        collected_webtoon = NaverWebtoonCrawler(webtoon_id)
+        collected_webtoon.load(loadname)
+        break
+
     elif webtoon_id == 'search':
 
-        search_keyword = input('search >>> ')
+        search_keyword = input('검색어 입력 >>> ')
         print('')
         result_dict = webtoon_search(search_keyword)
         list_number = 0
@@ -44,10 +97,10 @@ while True:
         print('')
         
         if result_dict == []:
-            print('No result', '\n')
+            print('결과 없음', '\n')
             continue
         elif result_dict != []:
-            select_id = input('Select from list >>> ')
+            select_id = input('목록에서 선택 >>> ')
             print('')
             webtoon_id = result_dict[int(select_id)]['Id']
             break
@@ -58,74 +111,85 @@ while True:
     elif len(webtoon_id) == 6:
         webtoon_id = webtoon_id
         break
+
+    else:
+        print('웹툰 ID 혹은 명령어를 입력하세요.', '\n')
 try:
     webtoon_id = int(webtoon_id)
-    collected_webtoon = NaverWebtoonCrawler(webtoon_id)
     info_dic = get_webtoon_info(webtoon_id)
+    print('')
     print('==================================', '\n')
     print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
 
 except ValueError:
-    print('type only 6 digit numbers', '\n')
+    print('6자리의 숫자로 입력하세요.', '\n')
+except AttributeError:
+    print('잘못된 웹툰 ID 입니다. 요일별 웹툰 혹은 웹툰 검색기능을 활용하세요.', '\n')
 except BreakIt as e:
     print(e)
     
-    
+if collected_webtoon != None:
+    pass
+else:
+    collected_webtoon = NaverWebtoonCrawler(webtoon_id)
     
 
 while True:
     print('')
     print('=============functions============')
-    print('1. get episodes')
-    print('2. number of total episodes')
-    print('3. show list')
-    print('4. check update')
-    print('5. update list')
-    print('6. clear page list')
-    print('7. save list')
-    print('8. load list')
+    print('1. 에피소드 목록 불러오기')
+    print('2. 전체 에피소드 개수 확인')
+    print('3. 에피소드 목록 확인')
+    print('4. 에피소드 목록이 최신인지 확인')
+    print('5. 최신 에피소드 목록으로 업데이트')
+    print('6. 에피소드 목록 삭제')
+    print('7. 에피소드 목록 저장')
+    print('8. 에피소드 목록 불러오기')
     print('==================================')
-    print('9. get contents from episodes list!')
-    print('q. exit')
+    print('9. 에피소드 목록에서 웹툰 추출')
+    print('q. 나가기')
     print('')
     selection = input('>>> ')
     print('')
 
     if selection == '1':
         collected_webtoon.clear_episode_list()
-        print('if 1 number is given: gets that page')
-        print('if 2 numbers are given: gets pages from i to j')
-        print("type 'full' to get all the pages", '\n')
+        print('한 자리 수를 입력하면 해당 페이지 목록을 가져옵니다.')
+        print('i, j 의 형식으로 입력하면 i 페이지부터 j 페이지까지의 목록을 불러옵니다.')
+        print("모든 에피소드를 가져오려면 'full' 을 입력하세요.", '\n')
         page_num = input('>>> ')
         print('')
         page_num = page_num.split(',')
 
         if page_num[0] == 'full':
             collected_webtoon.get_episode_list('full')
-            print('all pages have been collected')
+            print('모든 에피소드를 가져왔습니다.')
         elif len(page_num) == 1:
             collected_webtoon.get_episode_list(int(page_num[0]))
-            print(f'{webtoon_id}, page {page_num[0]} collected!')
+            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지의 에피소드 목록을 가져왔습니다!')
         elif len(page_num) == 2:
             collected_webtoon.get_episode_list(int(page_num[0]), int(page_num[1]))
-            print(f'{webtoon_id}, pages from {page_num[0]} to {page_num[1]} collected!')
+            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지 부터 {page_num[1]} 페이지 까지의 에피소드 목록을 가져왔습니다!')
         continue
 
     elif selection == '2':
-        print(f'there are total {collected_webtoon.total_episode_count()} episodes in this webtoon')
+        print(f'웹툰 {webtoon_id}는 총 {collected_webtoon.total_episode_count()} 개의 에피소드가 있습니다.')
 
     elif selection == '3':
         if len(collected_webtoon.episode_list) == 0:
-            print('episode list is empty')
+            print('에피소드 목록이 비어있습니다. 목록을 먼저 가져와주세요.')
         for i in collected_webtoon.episode_list:
-            print(f'{i.No}. {i.Title}')
+            try:
+                print(f'{i.Title} 평점: {i.Rating} 날짜: {i.Date}')
+            except:
+                print(i)
         continue
 
     elif selection == '4':
         collected_webtoon.up_to_date
 
     elif selection == '5':
-        force_update_question = input('force update? [y/n] ')
+        force_update_question = input('강제 업데이트 하시겠습니까? [y/n] ')
         print('')
         if force_update_question == 'y':
             collected_webtoon.update_episode_list(force_update=True)
@@ -133,28 +197,45 @@ while True:
             collected_webtoon.update_episode_list(force_update=False)
 
     elif selection == '6':
-        print(collected_webtoon.clear_episode_list())
+        make_sure = input('현재 에피소드 목록을 삭제합니다. 진행하시겠습니까? [y/rf/n] \n rf: 저장 파일까지 삭제 \n>>> ')
+        if make_sure == 'rf':
+            collected_webtoon.clear_episode_list(filename=loadname, make_sure=make_sure)
+        else:
+            collected_webtoon.clear_episode_list(make_sure=make_sure)
 
     elif selection == '7':
-        savename = input('filename? >>> ')
-        filetype = input('filetype? >>> ')
+        savename = input('파일 이름 입력 >>> ')
+        filetype = input('파일 타입 입력 >>> ')
         print('')
         collected_webtoon.save(savename, filetype)
 
     elif selection == '8':
         try:
-            loadname = input('filename? >>> ')
+            saved_list = os.listdir('./saved_list')
+            if saved_list == []:
+                print('저장된 파일이 없습니다.')
+                continue
+
+            for i in saved_list:
+                print(i)
+            print('')
+            loadname = input('불러올 파일 이름 입력 >>> ')
             print('')
             collected_webtoon.load(loadname)
+        
         except FileNotFoundError:
-            print('Wrong filename or directory!')
+            print('파일 이름 또는 경로가 잘못되었습니다!')
             continue
+
     elif selection =='9':
-        collected_webtoon.get_contents()
+        if len(collected_webtoon.episode_list) == 0:
+            print('에피소드 목록이 비어있습니다. 목록을 먼저 가져와주세요.')
+        else:
+            collected_webtoon.get_contents()
 
 
     elif selection == 'q':
-        print('Session Terminated by user')
+        print('사용자에 의해 세션이 종료되었습니다.')
         break
     else:
-        print('wrong input')
+        print('잘못된 입력')
