@@ -8,17 +8,20 @@ class BreakIt(Exception):
     def __str__(self):
         return '사용자에 의해 세션이 종료되었습니다.'
 
-print('==================================')
-print('=      Naver_Webtoon_Crawler     =')
-print('==================================')
+print('==============================================')
+print('=            Naver_Webtoon_Crawler           =')
+print('==============================================')
+print('                             - Created by Che1')
+print('')
+
 while True:
     print("")
-    print('============명령어 목록===========')
+    print('==================명령어 목록=================')
     print('list : 요일별 웹툰 목록 확인')
     print('search : 웹툰 정보 검색')
     print('load : 저장된 웹툰 목록 확인')
     print('웹툰 ID (6자리 숫자) : 해당 ID 웹툰 불러오기')
-    print('==================================')
+    print('==============================================')
     print('')
     webtoon_id = input('명령 입력 >>> ')
     print("")
@@ -120,8 +123,8 @@ try:
     webtoon_id = int(webtoon_id)
     info_dic = get_webtoon_info(webtoon_id)
     print('')
-    print('==================================', '\n')
-    print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
+    print('==============================================', '\n')
+    print(f'  제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
 
 except ValueError:
     print('6자리의 숫자로 입력하세요.', '\n')
@@ -137,7 +140,7 @@ else:
 
 while True:
     print('')
-    print('=============functions============')
+    print('===================functions==================')
     print('1. 에피소드 목록 불러오기')
     print('2. 전체 에피소드 개수 확인')
     print('3. 에피소드 목록 확인')
@@ -146,7 +149,7 @@ while True:
     print('6. 에피소드 목록 삭제')
     print('7. 에피소드 목록 저장')
     print('8. 에피소드 목록 불러오기')
-    print('==================================')
+    print('==============================================')
     print('9. 에피소드 목록에서 웹툰 추출')
     print('r. 세션 재시작')
     print('q. 나가기')
@@ -172,13 +175,13 @@ while True:
         elif len(page_num) == 2:
             collected_webtoon.get_episode_list(int(page_num[0]),
                                                int(page_num[1]))
-            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지 부터
-                  {page_num[1]} 페이지 까지의 에피소드 목록을 가져왔습니다!')
+            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지 부터 {page_num[1]}\
+페이지 까지의 에피소드 목록을 가져왔습니다!')
         continue
 
     elif selection == '2':
-        print(f'웹툰 {webtoon_id}는 총 {collected_webtoon.total_episode_count()}
-              개의 에피소드가 있습니다.')
+        print(f'웹툰 {webtoon_id}는 총 {collected_webtoon.total_episode_count()}\
+개의 에피소드가 있습니다.')
 
     elif selection == '3':
         if len(collected_webtoon.episode_list) == 0:
@@ -202,9 +205,10 @@ while True:
             collected_webtoon.update_episode_list(force_update=False)
 
     elif selection == '6':
-        make_sure = input('현재 에피소드 목록을 삭제합니다.진행하시겠습니까? [y/rf/n] \n rf: 저장 파일까지 삭제 \n>>> ')
+        make_sure = input('현재 에피소드 목록을 삭제합니다.진행하시겠습니까? [y/rf/n] \n[rf]: 저장 파일까지 삭제 \n>>> ')
         if make_sure == 'rf':
-            collected_webtoon.clear_episode_list(filename=loadname, make_sure=make_sure)
+            collected_webtoon.clear_episode_list(filename=loadname,
+                                                 make_sure=make_sure)
         else:
             collected_webtoon.clear_episode_list(make_sure=make_sure)
 
@@ -250,8 +254,8 @@ while True:
         collected_webtoon.load(loadname)
         info_dic = get_webtoon_info(webtoon_id)
         print('')
-        print('==================================', '\n')
-        print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
+        print('==============================================', '\n')
+        print(f'  제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
         continue
 
     elif selection == '9':
