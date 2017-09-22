@@ -91,9 +91,37 @@ while True:
 
     elif webtoon_id == 'search':
 
+        print('웹툰을 검색합니다.')
+        print('"검색어 -옵션"으로 검색 옵션을 지정할 수 있습니다. (지정하지 않으면 전체 검색)')
+        print('')
+        print('옵션 목록:')
+        print('-a: 작가 검색')
+        print('-t: 제목 검색')
+        print('')
         search_keyword = input('검색어 입력 >>> ')
         print('')
-        result_dict = webtoon_search(search_keyword)
+        search_keyword = search_keyword.split(' -')
+
+        if len(search_keyword) == 1:
+            keyword = search_keyword[0]
+            mode = 1
+            print(f'{search_keyword[0]} 검색 결과:')
+            print('')
+            pass
+
+        elif len(search_keyword) == 2:
+            keyword = search_keyword[0]
+            mode = search_keyword[1]
+            if mode == 'a':
+                print('-작가 검색-')
+                print('')
+            elif mode == 't':
+                print('-제목 검색-')
+                print('')
+            print(f'{search_keyword[0]} 검색 결과:')
+            print('')
+
+        result_dict = webtoon_search(keyword, mode)
         list_number = 0
 
         for i in result_dict:

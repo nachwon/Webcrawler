@@ -153,12 +153,17 @@ def get_webtoon_id(day):
     return webtoon_id_list
 
 
-def webtoon_search(keyword):
+def webtoon_search(keyword, search_type=1):
     page_no = 1
     dict_list = []
 
+    if search_type == 1 or search_type == 't':
+        search_mode = 'title'
+    elif search_type == 'a':
+        search_mode = 'artist'
+
     while True:
-        search_info = {'type': 'title', 'm': 'webtoon',
+        search_info = {'type': search_mode, 'm': 'webtoon',
                        'keyword': keyword, 'page': page_no}
         search_url = requests.get(f'http://comic.naver.com/search.nhn?',
                                   params=search_info)
