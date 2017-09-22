@@ -90,36 +90,41 @@ while True:
         break
 
     elif webtoon_id == 'search':
-
-        print('웹툰을 검색합니다.')
-        print('"검색어 -옵션"으로 검색 옵션을 지정할 수 있습니다. (지정하지 않으면 전체 검색)')
-        print('')
-        print('옵션 목록:')
-        print('-a: 작가 검색')
-        print('-t: 제목 검색')
-        print('')
-        search_keyword = input('검색어 입력 >>> ')
-        print('')
-        search_keyword = search_keyword.split(' -')
-
-        if len(search_keyword) == 1:
-            keyword = search_keyword[0]
-            mode = 1
-            print(f'{search_keyword[0]} 검색 결과:')
+        while True:
+            print('웹툰을 검색합니다.')
+            print('"검색어 -옵션"으로 검색 옵션을 지정할 수 있습니다. (지정하지 않으면 제목 검색)')
             print('')
-            pass
-
-        elif len(search_keyword) == 2:
-            keyword = search_keyword[0]
-            mode = search_keyword[1]
-            if mode == 'a':
-                print('-작가 검색-')
-                print('')
-            elif mode == 't':
-                print('-제목 검색-')
-                print('')
-            print(f'{search_keyword[0]} 검색 결과:')
+            print('옵션 목록:')
+            print('-a: 작가 검색')
+            print('-t: 제목 검색')
             print('')
+            search_keyword = input('검색어 입력 >>> ')
+            print('')
+            search_keyword = search_keyword.split(' -')
+
+            if len(search_keyword) == 1:
+                keyword = search_keyword[0]
+                mode = 1
+                print(f'{search_keyword[0]} 검색 결과:')
+                print('')
+                break
+
+            elif len(search_keyword) == 2:
+                keyword = search_keyword[0]
+                mode = search_keyword[1]
+                if mode == 'a':
+                    print('-작가 검색-')
+                    print('')
+                elif mode == 't':
+                    print('-제목 검색-')
+                    print('')
+                print(f'{search_keyword[0]} 검색 결과:')
+                print('')
+                break
+
+            else:
+                print('검색어 입력이 잘못되었습니다.')
+                continue
 
         result_dict = webtoon_search(keyword, mode)
         list_number = 0
@@ -215,6 +220,8 @@ while True:
         if len(collected_webtoon.episode_list) == 0:
             print('에피소드 목록이 비어있습니다. 목록을 먼저 가져와주세요.')
         for i in collected_webtoon.episode_list:
+            if type(i) == int:
+                continue
             try:
                 print(f'{i.Title} 평점: {i.Rating} 날짜: {i.Date}')
             except:
@@ -234,6 +241,7 @@ while True:
 
     elif selection == '6':
         make_sure = input('현재 에피소드 목록을 삭제합니다.진행하시겠습니까? [y/rf/n] \n[rf]: 저장 파일까지 삭제 \n>>> ')
+        print('')
         if make_sure == 'rf':
             collected_webtoon.clear_episode_list(filename=loadname,
                                                  make_sure=make_sure)

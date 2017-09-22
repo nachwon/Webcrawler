@@ -7,48 +7,12 @@ from PIL import Image
 from collections import namedtuple
 from bs4 import BeautifulSoup
 
-HTML_HEAD = """<html>
-    <head>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <table>
-        """
-
-HTML_HEAD_CONTENT = """<html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            img{
-                float: left;
-            }
-            div{
-                width: 800px;
-                margin: 0 auto;
-            }
-        </style>
-    </head>
-    <body>
-        """
-
-HTML_TAIL = """</table>
-</body>
-</html>"""
-
-HTML_TAIL_CONTENT = """
-</body>
-</html>"""
-
-HTML_BODY = """    <tr>
-        <td><img src={img}></td>
-        <td>{title}</td>
-        <td>{rating}</td>
-        <td>{date}</td>
-        </tr>
-        """
-
-HTML_BODY_CONTENT = """<div><img src="{filedirection}"></div>
-"""
+HTML_HEAD = open('/home/che1/Projects/python/webtooncrawler/html/HTML_HEAD.html', 'rt').read()
+HTML_HEAD_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_HEAD_CONTENT.html', 'rt').read()
+HTML_TAIL = open('/home/che1/Projects/python/webtooncrawler/html/HTML_TAIL.html', 'rt').read()
+HTML_TAIL_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_TAIL_CONTENT.html', 'rt').read()
+HTML_BODY = open('/home/che1/Projects/python/webtooncrawler/html/HTML_BODY.html', 'rt').read()
+HTML_BODY_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_BODY_CONTENT.html', 'rt').read()
 
 Episode = namedtuple('Episode', ['Img_url', 'Title', 'Rating', 'Date', 'No'])
 
@@ -157,10 +121,12 @@ def webtoon_search(keyword, search_type=1):
     page_no = 1
     dict_list = []
 
-    if search_type == 1 or search_type == 't':
+    if search_type == 't':
         search_mode = 'title'
     elif search_type == 'a':
         search_mode = 'artist'
+    else:
+        search_mode = 'title'
 
     while True:
         search_info = {'type': search_mode, 'm': 'webtoon',

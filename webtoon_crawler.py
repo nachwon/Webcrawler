@@ -145,24 +145,32 @@ class NaverWebtoonCrawler:
     def clear_episode_list(self, filename=None, make_sure='bypass'):
         if make_sure == 'y':
             self.episode_list = []
-            return '에피소드 목록을 비웠습니다!'
+            print('에피소드 목록을 비웠습니다!')
         elif make_sure == 'bypass':
             self.episode_list = []
         elif make_sure == 'rf':
             self.episode_list = []
             os.remove(f'./saved_list/{filename}')
         else:
-            return '에피소드 목록을 삭제하지 않았습니다.'
+            print('에피소드 목록을 삭제하지 않았습니다.')
 
     def save(self, path=None, file_type='txt'):
-        if file_type == 'html':
-            f = open(f'./saved_list/{path}.{file_type}', 'wt')
+        if self.episode_list == []:
+            print('에피소드 목록이 비어있습니다.')
+
+        elif file_type == 'html':
+            f = open(f'./saved_webtoons/{path}.{file_type}', 'wt')
             f.write(HTML_HEAD)
             for i in self.episode_list:
+                if type(i) == int:
+                    continue
                 f.write(HTML_BODY.format(img=i.Img_url,
                         title=i.Title,
                         rating=i.Rating,
-                        date=i.Date))
+                        date=i.Date,
+                        webtoon_id=self.webtoon_id,
+                        No=i.No,
+                        ))
             f.write(HTML_TAIL)
 
             f.close()
@@ -170,7 +178,10 @@ class NaverWebtoonCrawler:
 
         elif file_type == 'txt':
             f = open(f'./saved_list/{path}.{file_type}', 'wb')
-            self.episode_list.append(self.webtoon_id)
+            if type(self.episode_list[-1]) == int:
+                pass
+            else:
+                self.episode_list.append(self.webtoon_id)
             pickle.dump(self.episode_list, f)
             f.close()
             print(f'에피소드 목록을 ./saved_list/{path}.{file_type} 에 성공적으로 저장하였습니다.')
@@ -182,37 +193,49 @@ class NaverWebtoonCrawler:
         self.episode_list = pickle.load(f)
         f.close()
         print(f'에피소드 목록을 ./saved_list/{path} 에서 성공적으로 불러왔습니다.')
-        return self.episode_list.pop()
+        if type(self.episode_list[-1]) == int:
+            return self.episode_list.pop()
+        else:
+            pass
 
     def get_contents(self):
 
         # 에피소드 리스트에서 에피소드 내용 이미지 리스트 추출
         for episode in self.episode_list:
             content_list = []
-            content_info = {'titleId': self.webtoon_id, 'no': episode.No}
+            try:
+                content_info = {'titleId': self.webtoon_id, 'no': episode.No}
+            except AttributeError:
+                continue
             url = requests.get('http://comic.naver.com/webtoon/detail.nhn?',
                                params=content_info)
             content_data = url.text
             content_bs = BeautifulSoup(content_data, 'lxml')
             content_data_div = content_bs.find_all('div', class_='wt_viewer')
-            content_img = content_data_div[0].find_all('img')
+            try:
+                content_img = content_data_div[0].find_all('img')
+            except IndexError:
+                print('성인 웹툰입니다. 성인 웹툰 다운로드는 아직 지원되지 않습니다.')
+                print('')
+                break
             for i in content_img:
                 content_list.append(i.get('src'))
             count = 1
 
-            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.Title}',
+            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}',
                         exist_ok=True)
-            # 폴더 생성
+            
 
             print(f'{episode.Title} 다운로드 시작')
             referer_url = f'http://comic.naver.com/webtoon/list.nhn?titleId={self.webtoon_id}'
             user_agent = {'Referer': referer_url}
 
-            HTML_CONTENT = open(f'webtoon/{self.webtoon_id}/{episode.Title}/{episode.No}.html', 'wt')
+            # 폴더 생성
+            HTML_CONTENT = open(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}/{episode.No}.html', 'wt')
             HTML_CONTENT.write(HTML_HEAD_CONTENT)
             for i in content_list:
                 img = requests.get(i, headers=user_agent)
-                f = open(f'webtoon/{self.webtoon_id}/{episode.Title}/{episode.No}_{count}.jpg', 'wb')
+                f = open(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}/{episode.No}_{count}.jpg', 'wb')
                 f.write(img.content)
                 f.close()
                 filedirection = f'./{episode.No}_{count}.jpg'
