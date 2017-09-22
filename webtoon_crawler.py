@@ -1,6 +1,8 @@
 import requests
 import re
 import pickle
+import time
+import progressbar
 from operator import attrgetter
 from utils import *
 from bs4 import BeautifulSoup
@@ -55,10 +57,14 @@ class NaverWebtoonCrawler:
             
         for i in self.episode_list:
             content_no_list.append(i.No)
+
         # 강제 업데이트가 꺼져있으면
         if force_update == False:
+            
+            if content_no_list == []:
+                print('에피소드 목록이 비어있습니다.')
             # 최신글과 목록 최상위 글이 같으면
-            if self.is_up_to_date == True:
+            elif self.is_up_to_date == True:
                 print('에피소드 목록이 이미 최신상태입니다!')
                 print(count, '개의 에피소드가 추가되었습니다.')
             # 최신글과 목록 최상위 글이 다르면
@@ -88,8 +94,12 @@ class NaverWebtoonCrawler:
                     pass
             
         elif force_update == True:  # 강제 업데이트 켜져있으면
-            print('강제 업데이트를 시작합니다...')
-            if self.is_up_to_date == True:  # 최신글이랑 가지고 있는 글 최상위랑 비교
+            print('강제 업데이트를 시작합니다...', '\n')
+
+            if content_no_list == []:
+                print('에피소드 목록이 비어있습니다.')
+
+            elif self.is_up_to_date == True:  # 최신글이랑 가지고 있는 글 최상위랑 비교
                 print('에피소드 목록이 이미 최신상태입니다.')
                 print(count, '개의 에피소드가 추가되었습니다.')
 
@@ -118,6 +128,7 @@ class NaverWebtoonCrawler:
                                     raise BreakIt  # 끝냄
                                 else:
                                     continue
+
                 except BreakIt:
                     pass
 
@@ -180,25 +191,31 @@ class NaverWebtoonCrawler:
                 content_list.append(i.get('src'))
             count = 1
 
-            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}화', exist_ok=True)
+            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.Title}', exist_ok=True)
             # 폴더 생성
             
             print(f'{episode.Title} 다운로드 시작')
             referer_url = f'http://comic.naver.com/webtoon/list.nhn?titleId={self.webtoon_id}'
             user_agent = {'Referer': referer_url}
+
+            HTML_CONTENT = open(f'webtoon/{self.webtoon_id}/{episode.Title}/{episode.No}.html', 'wt')
+            HTML_CONTENT.write(HTML_HEAD_CONTENT)
             for i in content_list:
-                
                 img = requests.get(i, headers=user_agent)
-                f = open(f'webtoon/{self.webtoon_id}/{episode.No}화/{episode.No}_{count}.jpg', 'wb')
+                f = open(f'webtoon/{self.webtoon_id}/{episode.Title}/{episode.No}_{count}.jpg', 'wb')
                 f.write(img.content)
                 f.close()
+                filedirection = f'./{episode.No}_{count}.jpg'
+                HTML_CONTENT.write(HTML_BODY_CONTENT.format(filedirection=filedirection))
                 print(f'{count}.jpg 다운로드 완료', end='\r')
-                
                 count += 1
             # 경로 이미 존재할 경우 스킵
             # if os.path.exists(filepath):
                 # continue
-            print(f'{episode.Title} 다운로드 완료')
+            HTML_CONTENT.write(HTML_TAIL_CONTENT)
+            HTML_CONTENT.close()
+            print('다운로드 완료              ')
+        print('전체 목록 다운로드 완료')
 
     # print(content_list)
 # yumi = NaverWebtoonCrawler('694131')

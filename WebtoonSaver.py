@@ -3,6 +3,7 @@ import crawler_restarter
 from webtoon_crawler import NaverWebtoonCrawler
 from utils import *
 
+
 class BreakIt(Exception):
     def __str__(self):
         return '사용자에 의해 세션이 종료되었습니다.'
@@ -96,7 +97,7 @@ while True:
             print(f"{list_number}. ID : {i['Id']} Title : {i['Title']}")
             list_number += 1
         print('')
-        
+
         if result_dict == []:
             print('결과 없음', '\n')
             continue
@@ -108,7 +109,7 @@ while True:
 
     elif webtoon_id == 'q':
         raise BreakIt
-        
+
     elif len(webtoon_id) == 6:
         webtoon_id = webtoon_id
         break
@@ -128,12 +129,11 @@ except AttributeError:
     print('잘못된 웹툰 ID 입니다. 요일별 웹툰 혹은 웹툰 검색기능을 활용하세요.', '\n')
 except BreakIt as e:
     print(e)
-    
-if collected_webtoon != None:
+
+if collected_webtoon is not None:
     pass
 else:
     collected_webtoon = NaverWebtoonCrawler(webtoon_id)
-    
 
 while True:
     print('')
@@ -170,12 +170,15 @@ while True:
             collected_webtoon.get_episode_list(int(page_num[0]))
             print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지의 에피소드 목록을 가져왔습니다!')
         elif len(page_num) == 2:
-            collected_webtoon.get_episode_list(int(page_num[0]), int(page_num[1]))
-            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지 부터 {page_num[1]} 페이지 까지의 에피소드 목록을 가져왔습니다!')
+            collected_webtoon.get_episode_list(int(page_num[0]),
+                                               int(page_num[1]))
+            print(f'웹툰 {webtoon_id}, {page_num[0]} 페이지 부터
+                  {page_num[1]} 페이지 까지의 에피소드 목록을 가져왔습니다!')
         continue
 
     elif selection == '2':
-        print(f'웹툰 {webtoon_id}는 총 {collected_webtoon.total_episode_count()} 개의 에피소드가 있습니다.')
+        print(f'웹툰 {webtoon_id}는 총 {collected_webtoon.total_episode_count()}
+              개의 에피소드가 있습니다.')
 
     elif selection == '3':
         if len(collected_webtoon.episode_list) == 0:
@@ -199,7 +202,7 @@ while True:
             collected_webtoon.update_episode_list(force_update=False)
 
     elif selection == '6':
-        make_sure = input('현재 에피소드 목록을 삭제합니다. 진행하시겠습니까? [y/rf/n] \n rf: 저장 파일까지 삭제 \n>>> ')
+        make_sure = input('현재 에피소드 목록을 삭제합니다.진행하시겠습니까? [y/rf/n] \n rf: 저장 파일까지 삭제 \n>>> ')
         if make_sure == 'rf':
             collected_webtoon.clear_episode_list(filename=loadname, make_sure=make_sure)
         else:
@@ -251,7 +254,7 @@ while True:
         print(f'제목: {info_dic["Webtoon_title"]}   작가: {info_dic["Author"]}')
         continue
 
-    elif selection =='9':
+    elif selection == '9':
         if len(collected_webtoon.episode_list) == 0:
             print('에피소드 목록이 비어있습니다. 목록을 먼저 가져와주세요.')
         else:
