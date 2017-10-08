@@ -174,7 +174,7 @@ class NaverWebtoonCrawler:
             f.write(HTML_TAIL)
 
             f.close()
-            print(f'에피소드 목록을 ./saved_list/{path}.{file_type} 에 성공적으로 저장하였습니다.')
+            print(f'에피소드 목록을 ./saved_webtoons/{path}.{file_type} 에 성공적으로 저장하였습니다.')
 
         elif file_type == 'txt':
             f = open(f'./saved_list/{path}.{file_type}', 'wb')
