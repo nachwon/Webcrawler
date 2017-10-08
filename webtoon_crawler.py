@@ -222,7 +222,7 @@ class NaverWebtoonCrawler:
                 content_list.append(i.get('src'))
             count = 1
 
-            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}',
+            os.makedirs(f'webtoon/{self.webtoon_id}/{episode.No}',
                         exist_ok=True)
             
 
@@ -231,14 +231,14 @@ class NaverWebtoonCrawler:
             user_agent = {'Referer': referer_url}
 
             # 폴더 생성
-            HTML_CONTENT = open(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}/{episode.No}.html', 'wt')
+            HTML_CONTENT = open(f'webtoon/{self.webtoon_id}/{episode.No}/{episode.No}.html', 'wt')
             HTML_CONTENT.write(HTML_HEAD_CONTENT)
             for i in content_list:
                 img = requests.get(i, headers=user_agent)
-                f = open(f'webtoon/{self.webtoon_id}/{episode.No}_{episode.Title}/{episode.No}_{count}.jpg', 'wb')
+                f = open(f'webtoon/{self.webtoon_id}/{episode.No}/{count}.jpg', 'wb')
                 f.write(img.content)
                 f.close()
-                filedirection = f'./{episode.No}_{count}.jpg'
+                filedirection = f'./{count}.jpg'
                 HTML_CONTENT.write(HTML_BODY_CONTENT.format(
                                    filedirection=filedirection))
                 print(f'{count}.jpg 다운로드 완료', end='\r')
