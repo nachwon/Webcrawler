@@ -51,6 +51,7 @@ while True:
         select_id = input('목록에서 선택 >>> ')
         print('')
         webtoon_id = webtoon_list[int(select_id)].Id
+        print(webtoon_id)
         break
 
     elif webtoon_id == 'load':
@@ -161,8 +162,8 @@ try:
 
 except ValueError:
     print('6자리의 숫자로 입력하세요.', '\n')
-except AttributeError:
-    print('잘못된 웹툰 ID 입니다. 요일별 웹툰 혹은 웹툰 검색기능을 활용하세요.', '\n')
+# except AttributeError:
+#     print('잘못된 웹툰 ID 입니다. 요일별 웹툰 혹은 웹툰 검색기능을 활용하세요.', '\n')
 except BreakIt as e:
     print(e)
 

@@ -155,6 +155,11 @@ class NaverWebtoonCrawler:
             print('에피소드 목록을 삭제하지 않았습니다.')
 
     def save(self, path=None, file_type='txt'):
+        if not os.path.exists("./saved_webtoons"):
+            os.mkdir("./saved_webtoons")
+        if not os.path.exists("./saved_list"):
+            os.mkdir("./saved_list")
+
         if self.episode_list == []:
             print('에피소드 목록이 비어있습니다.')
 

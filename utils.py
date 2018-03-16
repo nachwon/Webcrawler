@@ -90,10 +90,12 @@ def get_webtoon_info(web_id):
     info_data = info_url.text
     info_bs = BeautifulSoup(info_data, 'lxml')
 
-    webtoon_title = info_bs.select_one('h2')
-    Info['Webtoon_title'] = webtoon_title.contents[0].strip()
-    wrt_name = webtoon_title.find('span', class_='wrt_nm')
-    Info['Author'] = wrt_name.text.strip()
+    comic_info = info_bs.find("div", class_="comicinfo")
+    webtoon_title = comic_info.select_one("h2").next.strip()
+
+    Info['Webtoon_title'] = webtoon_title
+    wrt_name = comic_info.select_one("h2").find("span").contents[0].strip()
+    Info['Author'] = wrt_name
     return Info
 
 
