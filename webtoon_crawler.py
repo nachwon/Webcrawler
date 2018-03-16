@@ -164,6 +164,7 @@ class NaverWebtoonCrawler:
             print('에피소드 목록이 비어있습니다.')
 
         elif file_type == 'html':
+            root_dir = os.path.dirname(__file__)
             f = open(f'./saved_webtoons/{path}.{file_type}', 'wt')
             f.write(HTML_HEAD)
             for i in self.episode_list:
@@ -173,6 +174,7 @@ class NaverWebtoonCrawler:
                         title=i.Title,
                         rating=i.Rating,
                         date=i.Date,
+                        root_dir=root_dir,
                         webtoon_id=self.webtoon_id,
                         No=i.No,
                         ))
