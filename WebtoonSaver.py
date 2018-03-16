@@ -51,7 +51,7 @@ while True:
         select_id = input('목록에서 선택 >>> ')
         print('')
         webtoon_id = webtoon_list[int(select_id)].Id
-        print(webtoon_id)
+        print(f'웹툰 ID: {webtoon_id}')
         break
 
     elif webtoon_id == 'load':
