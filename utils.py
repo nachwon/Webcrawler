@@ -7,12 +7,14 @@ from PIL import Image
 from collections import namedtuple
 from bs4 import BeautifulSoup
 
-HTML_HEAD = open('/home/che1/Projects/python/webtooncrawler/html/HTML_HEAD.html', 'rt').read()
-HTML_HEAD_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_HEAD_CONTENT.html', 'rt').read()
-HTML_TAIL = open('/home/che1/Projects/python/webtooncrawler/html/HTML_TAIL.html', 'rt').read()
-HTML_TAIL_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_TAIL_CONTENT.html', 'rt').read()
-HTML_BODY = open('/home/che1/Projects/python/webtooncrawler/html/HTML_BODY.html', 'rt').read()
-HTML_BODY_CONTENT = open('/home/che1/Projects/python/webtooncrawler/html/HTML_BODY_CONTENT.html', 'rt').read()
+BASE_HTML_DIR = os.path.join(os.path.dirname(__file__), 'html')
+
+HTML_HEAD = open(os.path.join(BASE_HTML_DIR, 'HTML_HEAD.html'), 'rt').read()
+HTML_HEAD_CONTENT = open(os.path.join(BASE_HTML_DIR, 'HTML_HEAD_CONTENT.html'), 'rt').read()
+HTML_TAIL = open(os.path.join(BASE_HTML_DIR, 'HTML_TAIL.html'), 'rt').read()
+HTML_TAIL_CONTENT = open(os.path.join(BASE_HTML_DIR, 'HTML_TAIL_CONTENT.html'), 'rt').read()
+HTML_BODY = open(os.path.join(BASE_HTML_DIR, 'HTML_BODY.html'), 'rt').read()
+HTML_BODY_CONTENT = open(os.path.join(BASE_HTML_DIR, 'HTML_BODY_CONTENT.html'), 'rt').read()
 
 Episode = namedtuple('Episode', ['Img_url', 'Title', 'Rating', 'Date', 'No'])
 
