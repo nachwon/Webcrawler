@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import pickle
 import crawler_restarter
 from webtoon_crawler import NaverWebtoonCrawler
